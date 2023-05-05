@@ -22,7 +22,9 @@ rl
       process.exit();
     }
 
-    fs.appendFileSync(filePath, `${line}\n`)
-    console.log('Как дела?')
+    fs.appendFile(filePath, `${line}\n`, function () {
+      console.log('Как дела?');
+    })
+
 
   });
