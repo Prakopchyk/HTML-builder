@@ -7,7 +7,6 @@ async function listDir(dir) {
     var files = await fs.promises.readdir(dirPath, { withFileTypes: true });
 
     files.forEach(async f => {
-      // let res = '';
       if (f.isFile()) {
         let fullName = f.name;
         let filePath = path.join(dirPath, fullName);
