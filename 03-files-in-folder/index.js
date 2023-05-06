@@ -4,7 +4,7 @@ const path = require('path');
 async function listDir(dir) {
   let dirPath = path.join(__dirname, dir);
   try {
-    var files = await fs.promises.readdir(dirPath, { withFileTypes: true });
+    let files = await fs.promises.readdir(dirPath, { withFileTypes: true });
 
     files.forEach(async f => {
       if (f.isFile()) {
