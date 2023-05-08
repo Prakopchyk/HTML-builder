@@ -18,8 +18,6 @@ async function copyDir() {
         await fs.promises.copyFile(oldFilePath, newFilePath);
       }
     });
-
-    console.log('files was copied to files-copy');
   } catch (e) {
     console.error(`The file could not be copied: ${e}`);
   }
