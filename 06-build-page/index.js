@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 const newDirPath = path.join(__dirname, 'project-dist');
-fs.promises.mkdir(newDirPath, { recursive: true });
-
 const newStyleFile = path.join(newDirPath, 'style.css');
+
+fs.promises.mkdir(newDirPath, { recursive: true });
 
 async function createStyleCss() {
   const stylesDir = path.join(__dirname, 'styles');
@@ -27,47 +27,28 @@ async function createStyleCss() {
   }
 }
 
-const oldAssetsDir = path.join(__dirname, 'assets');
-
 async function copyAssets() {
+
+  const oldAssetsDir = path.join(__dirname, 'assets');
   const newAssetsDir = path.join(newDirPath, 'assets');
-  const newFontsDir = path.join(newAssetsDir, 'fonts');
-  const newImgDir = path.join(newAssetsDir, 'img');
-  const newSvgDir = path.join(newAssetsDir, 'svg');
 
+  copyDir(oldAssetsDir, newAssetsDir);
+}
+
+async function copyDir(sourceDir, targetDir) {
   try {
-    await fs.promises.mkdir(newAssetsDir, { recursive: true });
-    let dirItems = await fs.promises.readdir(oldAssetsDir, { withFileTypes: true });
-
-    dirItems.forEach(async d => {
-      if (d.isDirectory()) {
-        let oldAssetsInnerFolder = d.name;
-        await fs.promises.mkdir(newFontsDir, { recursive: true });
-        await fs.promises.mkdir(newImgDir, { recursive: true });
-        await fs.promises.mkdir(newSvgDir, { recursive: true });
-
-        let sourceAssetsFolder = path.join(oldAssetsDir, oldAssetsInnerFolder);
-
-        let files = await fs.promises.readdir(sourceAssetsFolder, { withFileTypes: true });
-        files.forEach(async (f) => {
-          if (f.isFile()) {
-            let fileName = f.name;
-            let extension = path.extname(fileName);
-            let oldFilePath = path.join(sourceAssetsFolder, fileName);
-            if (extension == '.svg') {
-              let newFilePath = path.join(newSvgDir, fileName);
-              await fs.promises.copyFile(oldFilePath, newFilePath);
-            }
-            else if (extension == '.jpg') {
-              let newFilePath = path.join(newImgDir, fileName);
-              await fs.promises.copyFile(oldFilePath, newFilePath);
-            }
-            else {
-              let newFilePath = path.join(newFontsDir, fileName);
-              await fs.promises.copyFile(oldFilePath, newFilePath);
-            }
-          }
-        })
+    let sourceDirItems = await fs.promises.readdir(sourceDir, { withFileTypes: true });
+    sourceDirItems.forEach(async item => {
+      if (item.isDirectory()) {
+        let sourceChildDir = path.join(sourceDir, item.name);
+        let targetChildDir = path.join(targetDir, item.name);
+        await fs.promises.mkdir(targetChildDir, { recursive: true });
+        await copyDir(sourceChildDir, targetChildDir)
+      }
+      else if (item.isFile) {
+        let sourceFile = path.join(sourceDir, item.name);
+        let targetFile = path.join(targetDir, item.name);
+        await fs.promises.copyFile(sourceFile, targetFile);
       }
     });
   } catch (e) {
