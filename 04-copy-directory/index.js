@@ -6,6 +6,7 @@ async function copyDir() {
   const oldDirPath = path.join(__dirname, 'files');
 
   try {
+    await fs.promises.rm(newDirPath, { recursive: true, force: true });
     await fs.promises.mkdir(newDirPath, { recursive: true });
     let files = await fs.promises.readdir(oldDirPath, { withFileTypes: true });
 
